@@ -21,7 +21,7 @@ const client = new Discord.Client();
 
 const prefix = "-"
 //Discord Login Token
-client.login('');
+client.login('MzE2OTAwMjk0NTI3Mjg3Mjk3.DAc5jg.ndvclpwSmuFtt63ScuttTRuxfYM');
 
 //Terminal Ready Message
 client.on('ready', () => {
@@ -30,6 +30,9 @@ client.on('ready', () => {
 //Game Name (appears in the sidebar)
   client.user.setGame('PRE PRE ALPHA');
   
+});
+process.on("unhandledRejection", (err) => {
+    console.error(`Uncaught Promise Rejection: \n${err.stack}`);
 });
 
 //Connection Messages
@@ -70,7 +73,12 @@ client.on("message", function(message) {
     //Allow Lower or Upper Case for the roles
     var availableRoles = {
     "europe": "Europe",
-    "something": "Something"
+    "americas": "Americas",
+    "guitar": "Guitar",
+    "bass": "Bass",
+    "keyboard": "Keyboard",
+    "vocals": "Vocals",
+
         };
 
     switch (args[0].toLowerCase()) {
@@ -93,18 +101,36 @@ client.on("message", function(message) {
         break;
 
         //SELF APPLICABLE ROLES
-        //-role (%RoleName%)
-      case "role":
-        if(availableRoles[args[1].toLowerCase()]){
-        let role = message.guild.roles.find('name', availableRoles[args[1].toLowerCase()]);
-        message.member.addRole(role ).catch(console.error);
-        }
-        break;
-        //The Roles (%RoleName%)
+        
+        //Europe
       case "europe":
         let europe = message.guild.roles.find('name', 'Europe');
-        message.member.addRole(europe) .then(() => 
-        {message.channel.sendMessage("You have now entered Europe");}).catch(console.error)
+        message.member.addRole(europe) .then(m => message.reply('You are now a :flag_eu: citizen. Unless your from :flag_uk: because BREXIT!')).catch(console.error);
         break;
-}
+        //Americas
+      case "americas":
+        let americas = message.guild.roles.find('name', 'Americas');
+        message.member.addRole(americas) .then(m => message.reply('You are now from somewhere in the region of :flag_us: :flag_ca: and :flag_br:. There are too many flags to list')).catch(console.error);
+        break;
+        //Guitar
+      case "guitar":
+        let guitar = message.guild.roles.find('name', 'Guitar');
+        message.member.addRole(guitar) .then(m => message.reply(':petrucci_scare: :guitar:')).catch(console.error);
+        break;
+        //Bass
+      case "bass":
+        let bass = message.guild.roles.find('name', 'Bass');
+        message.member.addRole(bass) .then(m => message.reply(':myung_uwotm8: :guitar:')).catch(console.error);
+        break;
+        //Keyboard/Piano
+      case "keyboard":
+        let keyboard = message.guild.roles.find('name', 'Keyboard');
+        message.member.addRole(keyboard) .then(m => message.reply(':rudess_yeo: :musical_keyboard:')).catch(console.error);
+        break;
+        //Vocals
+      case "vocals":
+        let vocals = message.guild.roles.find('name', 'vocals');
+        message.member.addRole(vocals) .then(m => message.reply(':labrie_nightmare: :microphone:')).catch(console.error);
+        break;
+} 
 });
