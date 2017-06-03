@@ -1,6 +1,12 @@
 /*
 NOMAC bot created specifically for the /r/DreamTheater discord
-Coded with love by Mattheous in node.js
+Coded with love by Mattheous
+
+Using the lovely and quite annoying discord.js repo
+
+With help from these awesome dudes:
+@Windsdon
+@Salies
 
 QUICK COPY LINKS
 FRONT NOMAC: https://b.thumbs.redditmedia.com/4b3mZRPvyN3LDEMcXt6cJNVKxQdZLo_m9z0Q-cfKF4I.png
@@ -60,7 +66,13 @@ client.on("message", function(message) {
   if (!message.content.startsWith(prefix)) return;
 
     var args = message.content.substring(prefix.length).split(" ");
-   
+
+    //Allow Lower or Upper Case for the roles
+    var availableRoles = {
+    "europe": "Europe",
+    "something": "Something"
+        };
+
     switch (args[0].toLowerCase()) {
      
       case "ping": //ping command
@@ -81,11 +93,18 @@ client.on("message", function(message) {
         break;
 
         //SELF APPLICABLE ROLES
-
-        //SECTION IS CURRENTLY BROKEN
+        //-role (%RoleName%)
+      case "role":
+        if(availableRoles[args[1].toLowerCase()]){
+        let role = message.guild.roles.find('name', availableRoles[args[1].toLowerCase()]);
+        message.member.addRole(role ).catch(console.error);
+        }
+        break;
+        //The Roles (%RoleName%)
       case "europe":
-        message.member.addRole(message.member.guild.roles.find("name", "Europe"));
+        let europe = message.guild.roles.find('name', 'Europe');
+        message.member.addRole(europe) .then(() => 
+        {message.channel.sendMessage("You have now entered Europe");}).catch(console.error)
         break;
 }
 });
-
