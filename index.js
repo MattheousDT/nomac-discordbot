@@ -21,7 +21,7 @@ const client = new Discord.Client();
 
 const prefix = "-"
 //Discord Login Token
-client.login('MzE2OTAwMjk0NTI3Mjg3Mjk3.DAc5jg.ndvclpwSmuFtt63ScuttTRuxfYM');
+client.login('');
 
 //Terminal Ready Message
 client.on('ready', () => {
