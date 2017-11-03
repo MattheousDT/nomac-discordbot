@@ -1,49 +1,25 @@
-/*
-NOMAC bot created specifically for the /r/DreamTheater discord
-Coded with love by Mattheous
-
-Using the lovely and quite annoying discord.js repo
-
-With help from these awesome dudes:
-@Windsdon
-@Salies
-
-QUICK COPY LINKS
-FRONT NOMAC: https://b.thumbs.redditmedia.com/4b3mZRPvyN3LDEMcXt6cJNVKxQdZLo_m9z0Q-cfKF4I.png
-SIDE NOMAC : https://b.thumbs.redditmedia.com/NAQCFZnuFZ-Le1K7Y1gXAqfgNnXggxN-HWzXWc3zFYA.png
-*/
-
-
 //Import the required modules
 const Discord = require('discord.js');
+const request = require('request');
+const async = require('async');
 const client = new Discord.Client();
-var moment = require('moment');
-var momentTz = require('moment-timezone');
-
-function test(){
-    "use strict";
-    let a = 1;
-} 
-
-const prefix = "-"
+const token = 'token';
+const key = 'musixmatchkey';
+const prefix = "!"
 //Discord Login Token
-client.login('');
+client.login(token);
 
 //Terminal Ready Message
 client.on('ready', () => {
   console.log('NOMAC is awake and fully operational!');
   
 //Game Name (appears in the sidebar)
-  client.user.setGame('v1.0 | -botinfo');
-  
+client.user.setGame("Salies' Beta");
+
 });
 process.on("unhandledRejection", (err) => {
     console.error(`Uncaught Promise Rejection: \n${err.stack}`);
 });
-
-//Extra Files Required
-var embed = require("./embeds.js");
-
 
 //Connection Messages
 client.on('disconnect', () => {
@@ -61,318 +37,216 @@ client.on('reconnecting', () => {
 // Create an event listener for new server members
 client.on('guildMemberAdd', member => {
 
-  const channel = member.guild.channels.find('name', 'discussion');
-  // Do nothing if the channel wasn't found on this server
-  if (!channel) return;
-  // Send the message, mentioning the member
-  channel.send(`Welcome ${member} to the /r/DreamTheater Discord server! I hope you will enjoy your stay here. 
-  If you could type either -europe or -americas to set your region.
-  After that, feel free to hang out with the other cool dudes on our server! #welcome has all of the information you should need.
-  You can request help from the NOMAC by typing -help`);
+const channel = member.guild.channels.find('name', 'discussion');
+// Do nothing if the channel wasn't found on this server
+if (!channel) return;
+// Send the message, mentioning the member
+channel.send(`Welcome ${member} to the /r/DreamTheater Discord server! I hope you will enjoy your stay here. 
+  If you could write down what region you are from and if you play an instrument, 
+  a moderator will assign those roles for you. 
+  After that, feel free to hang out with the other cool dudes on our server!`);
 });
 
-client.on
-
 client.on("message", function(message) {
-  if (message.author.equals(client.user)) return;
-
-  if (!message.content.startsWith(prefix)) return;
-
+    if (message.author.equals(client.user)) return;
+    if (!message.content.startsWith(prefix)) return;
+    //instead of setting the prefix each time, do this instead
     var args = message.content.substring(prefix.length).split(" ");
-
-    //Allow Lower or Upper Case for the roles
-    var availableRoles = {
-    "europe": "Europe",
-    "americas": "Americas",
-    "guitar": "Guitar",
-    "bass": "Bass",
-    "keyboard": "Keyboard",
-    "vocals": "Vocals",
-    "drums": "Drums",
-
-        };
-
+    console.log(args);
+    //simple commands
     switch (args[0].toLowerCase()) {
-     
-      //Ping
-      case "ping":
-        var startTime = Date.now();
-        const pingEmbed = new Discord.RichEmbed()
-        .setColor(0x85171d)
-        .setAuthor("Pong, my man!", 'https://a.thumbs.redditmedia.com/CK3mlJPLodayl_2bTbFkxC8FBuyevfeCTu0b6gK-_x8.png')
-        .setDescription("Time taken : ")
-        message.channel.sendEmbed(pingEmbed).then((m) => {
-        m.delete()
-        pingEmbed.setDescription('Time taken : ' + Math.floor(Date.now() - startTime) + ' ms.');
-        pingEmbed.addField('Websocket Response Time : ' , Math.floor(client.ping) + "ms")
-        message.channel.sendEmbed(pingEmbed)});
-        break;
-      //Avatar
-      case "avatar":
-        message.reply(message.author.avatarURL);
-        break;
-
-        //SELF APPLICABLE ROLES
-        
-        //Europe
-      case "europe":
-        let europe = message.guild.roles.find('name', 'Europe');
-        message.member.addRole(europe) .then(m => message.reply("You are now a :flag_eu: citizen. Unless you're from :flag_gb: because BREXIT!")).catch(console.error);
-        break;
-        //Americas
-      case "americas":
-        let americas = message.guild.roles.find('name', 'Americas');
-        message.member.addRole(americas) .then(m => message.reply('I flew around the globe and landed here! :earth_americas:')).catch(console.error);
-        break;
-        //Asia
-      case "asia":
-        let asia = message.guild.roles.find('name', 'Asia');
-        message.member.addRole(asia) .then(m => message.reply("I flew around the globe in search of music and landed here! :earth_asia:")).catch(console.error);
-        break;
-        //Guitar
-      case "guitar":
-        let guitar = message.guild.roles.find('name', 'Guitar');
-        message.member.addRole(guitar) .then(m => message.reply('<:petrucci_scare:293783989288828928> :guitar:')).catch(console.error);
-        break;
-        //Bass
-      case "bass":
-        let bass = message.guild.roles.find('name', 'Bass');
-        message.member.addRole(bass) .then(m => message.reply('<:myung_uwotm8:293783987812565003> :guitar:')).catch(console.error);
-        break;
-        //Drums
-      case "drums":
-        let drums = message.guild.roles.find('name', 'Drums');
-        message.member.addRole(drums) .then(m => message.reply('<:portnoy_stroke:293786431934038017> :drum:')).catch(console.error);
-        break;
-        //Keyboard
-      case "keyboard":
-        let keyboard = message.guild.roles.find('name', 'Keyboard/Piano');
-        message.member.addRole(keyboard) .then(m => message.reply('<:rudess_yeo:293783985689985024> :musical_keyboard:')).catch(console.error);
-        break;
-        //Piano
-      case "piano":
-        let piano = message.guild.roles.find('name', 'Keyboard/Piano');
-        message.member.addRole(piano) .then(m => message.reply('<:rudess_yeo:293783985689985024> :musical_keyboard:')).catch(console.error);
-        break;
-        //Vocals
-      case "vocals":
-        let vocals = message.guild.roles.find('name', 'Vocals');
-        message.member.addRole(vocals) .then(m => message.reply('<:labrie_nightmare:293790537880961024> :microphone:')).catch(console.error);
-        break;
-
-        //stupid instrument that don't actually exist
-      case "harmonica":
-        message.reply("<:mangini_phonecall:293783988353368064> https://youtu.be/-w-58hQ9dLk?t=10s  <:mangini_phonecall:293783988353368064>");
+        case "ping": //ping command
+            message.reply(args[0]);
+            var startTime = Date.now();
+            const pingEmbed = new Discord.RichEmbed()
+            .setColor(0x85171d)
+            .setAuthor("Pong, my man!", 'https://a.thumbs.redditmedia.com/CK3mlJPLodayl_2bTbFkxC8FBuyevfeCTu0b6gK-_x8.png')
+            .setDescription("Time taken : ")
+            message.channel.sendEmbed(pingEmbed).then((m) => {
+                m.delete();
+                pingEmbed.setDescription('Time taken : ' + Math.floor(Date.now() - startTime) + ' ms.');
+                pingEmbed.addField('Websocket Response Time : ' , Math.floor(client.ping) + "ms")
+                message.channel.sendEmbed(pingEmbed)
+            });
         break;
       
-      case "kazoo":
-        message.reply("<:petrucci_ayy:293786431661539328> I like to sing... Dance... Pretend... annddddd..... https://www.youtube.com/watch?v=cRpdIrq7Rbo");
+        case "avatar": //avatar
+            message.reply(message.author.avatarURL);
         break;
 
-      case "cowbell":
-        message.reply("I've got a fever, and the only prescription is https://www.youtube.com/watch?v=TklM2-lSby4");
-        break;
-      case "triangle":
-        message.reply(":small_red_triangle: https://www.youtube.com/watch?v=RFakY9qS47E");
-        break;
-
-      case "deathgrowl":
-        message.reply("<:portnoy_oh:293783988399767552> DAY AFTER DAY! https://www.youtube.com/watch?v=ltqQhXNA2KA AND NIGHT AFTER NIGHT! <:portnoy_oh:293783988399767552>");
-        break;
-
-      //END OF ROLES
-        //OTHER COMMANDS BELOW
-
-      case "botinfo":
-        message.channel.sendEmbed(embed.infoEmbed);
-        break;
-      
-      case "help":
-      message.channel.sendEmbed(embed.helpEmbed);
-      break;
-     
-      case "help2":
-      message.channel.sendEmbed(embed.helpEmbedTwo);
-      break;
-
-    
-      case "weeklylisten":
-      message.channel.sendEmbed(embed.weeklyEmbed);
-      break;
-
-      case "sub":
-      message.reply("http://reddit.com/r/dreamtheater");
-      break;  
-
-      case "subreddit":
-      message.reply("http://reddit.com/r/dreamtheater");
-      break
-
-      case "instrumentlist":
-      message.channel.sendEmbed(embed.helpEmbedInstrument);
-      break;
-
-      case "times":
-        current_time = moment().format('MMMM Do YYYY, h:mm a');
-        est = momentTz().tz("America/New_York").format('MMMM Do YYYY, h:mm a');
-        pst = momentTz().tz("America/Los_Angeles").format('MMMM Do YYYY, h:mm a');
-        mst = momentTz().tz("America/Boise").format('MMMM Do YYYY, h:mm a');
-        nst = momentTz().tz("America/St_Johns").format('MMMM Do YYYY, h:mm a');
-        cet = momentTz().tz("Europe/Stockholm").format('MMMM Do YYYY, h:mm a');
-        gmt = momentTz().tz("Europe/Dublin").format('MMMM Do YYYY, h:mm a');
-        ist = momentTz().tz("Asia/Kolkata").format('MMMM Do YYYY, h:mm a');
-        ast = momentTz().tz("Asia/Qatar").format('MMMM Do YYYY, h:mm a');
-        timesEmbed = new Discord.RichEmbed()
-        .setColor(0x85171d)
-        .setAuthor("Six O'Clock on a Christmas Morning", 'https://a.thumbs.redditmedia.com/CK3mlJPLodayl_2bTbFkxC8FBuyevfeCTu0b6gK-_x8.png')
-        .setThumbnail("https://openclipart.org/image/2400px/svg_to_png/217068/6oclock.png")
-        .addField("CST (Central Standard Time)", current_time)
-        .addField("EST (Eastern Standard Time)", est)
-        .addField("PST (Pacific Standard Time)", pst)
-        .addField("MST (Mountain Standard Time)", mst)
-        .addField("NST (Newfoundland Standard Time)", nst)
-        .addField("CET (Central European Time)", cet)
-        .addField("GMT (Greenwich Mean Time)", gmt)
-        .addField("IST (Indian Standard Time)", ist)
-        .addField("AST (Arabia Standard Time)", ast)
-        .setFooter("Don't see your timezone? Ping Mattheous to get yours added!")
-        message.channel.sendEmbed(timesEmbed);
-          break;
-
-    case "lyrics":
-      var paramInput1 = message.content.split(" ").slice(1);
-          paramInput2 = paramInput1.join(" ");
-          param = paramInput2.toUpperCase();
-          
-  //IMAGES AND WORDS
-      if (param == "PULL ME UNDER"){
-          message.channel.sendEmbed(embed.pmuEmbed);
-        }
-     
-      else if (param == "ANOTHER DAY"){
-          message.channel.sendEmbed(embed.adEmbed);
-        }
-      
-      else if (param == "TAKE THE TIME" || param == "TTT"){
-          message.channel.sendEmbed(embed.tttEmbed);
-        }
-
-      else if (param == "SURROUNDED"){
-          message.channel.sendEmbed(embed.surroundedEmbed);
-          message.channel.sendEmbed(embed.surroundedtwoEmbed);
-        }
-
-      else if (param == "METROPOLIS" || param == "METROPOLIS PART 1" || param == "METROPOLIS PT 1" || param == "METROPOLIS 1"){
-          message.channel.sendEmbed(embed.metropolisEmbed);
-        }
-
-      else if (param == "UNDER A GLASS MOON" || param == "GLASS MOON"){
-          message.channel.sendEmbed(embed.uagmEmbed);
-        }
-
-      else if (param == "WAIT FOR SLEEP" || param == "THAT SONG BEFORE LEARNING TO LIVE"){
-          message.channel.sendEmbed(embed.wfsEmbed);
-        }
-
-      else if (param == "LEARNING TO LIVE" || param == "LTL" || param == "NATURES UNFLEXABLE GRACE"){
-          message.channel.sendEmbed(embed.ltlEmbed);
-        }
-
-  //AWAKE
-      else if (param == "6:00" || param == "6" || param == "6 OCLOCK" || param == "6 O'CLOCK"){
-          message.channel.sendEmbed(embed.sixoclockEmbed);
-        }
-
-      else if (param == "CAUGHT IN A WEB"){
-          message.channel.sendEmbed(embed.ciawEmbed);
-      }
-      
-      else if (param == "INNOCENCE FADED"){
-          message.channel.sendEmbed(embed.ifEmbed);
-        }
-         
-      else if (param == "EROTOMANIA" || param =="EROTO" || param == "EROT"){
-          message.channel.sendEmbed(embed.erotomaniaEmbed);
-        }
-         
-      else if (param == "VOICES"){
-          message.channel.sendEmbed(embed.voicesEmbed);
-          message.channel.sendEmbed(embed.voicestwoEmbed);
-        }
-         
-      else if (param == "THE SILENT MAN" || param == "SILENT MAN"){
-          message.channel.sendEmbed(embed.tsmEmbed);
-        }
-         
-      else if (param == "THE MIRROR" || param == "MIRROR" || param == "PUPPIES ON ACID"){
-          message.channel.sendEmbed(embed.tmEmbed);
-        }
-         
-      else if (param == "LIE"){
-          message.channel.sendEmbed(embed.lieEmbed);
-        }
-         
-      else if (param == "LIFTING SHADOWS OFF A DREAM"){
-          message.channel.sendEmbed(embed.lsoadEmbed);
-        }
-         
-      else if (param == "SCARRED"){
-          message.channel.sendEmbed(embed.scarredEmbed);
-          message.channel.sendEmbed(embed.scarred2Embed);
-        }
-        
-      else if (param == "SPACE-DYE VEST" || param == "SPACE DYE VEST" || param== "SPACE DYE"){
-          message.channel.sendEmbed(embed.sdvEmbed);
-          message.channel.sendEmbed(embed.sdv2Embed);
-        }
-
-  //A CHANGE OF SEASONS
-      else if (param == "A CHANGE OF SEASONS" || param == "CHANGE OF SEASONS" || param == "ACOS"){
-          message.channel.sendEmbed(embed.acosoneEmbed);
-          message.channel.sendEmbed(embed.acostwoEmbed);
-          message.channel.sendEmbed(embed.acosthreeEmbed);
-          message.channel.sendEmbed(embed.acosfourEmbed);
-          message.channel.sendEmbed(embed.acosfiveEmbed);
-          message.channel.sendEmbed(embed.acossixEmbed);
-          message.channel.sendEmbed(embed.acossevenEmbed);          
-        }
-
-      else if (param == "A CHANGE OF SEASONS 1" || param == "CHANGE OF SEASONS 1" || param == "ACOS 1" || param == "THE CRIMSON SUNRISE" || param == "CRIMSON SUNRISE"){
-          message.channel.sendEmbed(embed.acosoneEmbed);        
-        }
-
-      else if (param == "A CHANGE OF SEASONS 2" || param == "CHANGE OF SEASONS 2" || param == "ACOS 2" || param == "INNOCENCE"){
-          message.channel.sendEmbed(embed.acostwoEmbed);        
-        }
-
-      else if (param == "A CHANGE OF SEASONS 3" || param == "CHANGE OF SEASONS 3" || param == "ACOS 3" || param == "CARPE DIEM"){
-          message.channel.sendEmbed(embed.acosthreeEmbed);        
-        }
-
-      else if (param == "A CHANGE OF SEASONS 4" || param == "CHANGE OF SEASONS 4" || param == "ACOS 4" || param == "THE DARKEST OF WINTERS" || param == "DARKEST OF WINTERS"){
-          message.channel.sendEmbed(embed.acosfourEmbed);        
-        }
-
-      else if (param == "A CHANGE OF SEASONS 5" || param == "CHANGE OF SEASONS 5" || param == "ACOS 5" || param == "ANOTHER WORLD"){
-          message.channel.sendEmbed(embed.acosfiveEmbed);        
-        }
-
-      else if (param == "A CHANGE OF SEASONS 6" || param == "CHANGE OF SEASONS 6" || param == "ACOS 6" || param == "THE INEVITABLE SUMMER" || param == "INEVITABLE SUMMER"){
-          message.channel.sendEmbed(embed.acossixEmbed);        
-        }
-
-      else if (param == "A CHANGE OF SEASONS 7" || param == "CHANGE OF SEASONS 7" || param == "ACOS 7" || param == "THE CRIMSON SUNSET" || param == "CRIMSON SUNSET" || param == "ACOS FINAL"){
-          message.channel.sendEmbed(embed.acossevenEmbed);        
-        }
-
-
-      else{
-          const errorEmbed = new Discord.RichEmbed()
-          .setColor(0xDC143C)
-          .setAuthor("Error!", 'https://a.thumbs.redditmedia.com/CK3mlJPLodayl_2bTbFkxC8FBuyevfeCTu0b6gK-_x8.png')
-          .setDescription("You entered an invalid parameter")
-          .setFooter("Correct usage: -lyrics <dt song> | It is possible you made a typo somewhere. Check your original message.")
-          message.channel.sendEmbed(errorEmbed);
-      }
+        case "help":
+            message.channel.send(
+                new Discord.RichEmbed()
+                .setColor(0x85171d)
+                .setAuthor("NOMAC // Commands", 'https://a.thumbs.redditmedia.com/CK3mlJPLodayl_2bTbFkxC8FBuyevfeCTu0b6gK-_x8.png')
+                .setThumbnail("https://cdn.shopify.com/s/files/1/1061/1924/files/Thinking_Face_Emoji.png")
+                .addField("ping", "Pong!")
+                .addField("botinfo", "Displays a short description of the bot")
+                .addField("lyrics", "Displays lyrics for the song. Usage: -lyrics <song name>")
+                .addField("help", "Type this if you want to cause inception")
+                .addField("times", "Displays a list of times in different timezones.")
+                .addField("europe, americas, oceania, africa or asia", "Choose your region")
+                .addField("<instrument>", "Type -instrumentlist list of variables")
+                .addField("instrumentlist", "I just explained what this does, Do you listen?")
+                .setFooter("Page 1 of 2 :: Use -help2 to view page 2 (Non serious commands)")
+            );
     }
-  });
+
+    //self-applicable roles
+    if(args[0]=='role'){
+        if(args[1]!=undefined){
+            let validRoles = ['americas','europe','asia','oceania','africa','bass','guitar','keyboard','vocals','drums', 'piano'];
+            let world = (args[1].toLowerCase()).charAt(0).toUpperCase() + args[1].slice(1);
+            let roles = {
+                'americas':'I flew around the globe and landed here! :earth_americas:',
+                'europe':"You are now a :flag_eu: citizen. Unless you're from :flag_gb: because BREXIT!",
+                'asia':"I flew around the globe in search of music and landed here! :earth_asia:",
+                'oceania':':ocean: ia, yay',
+                'africa':"I flew around the globe in search of music and landed here! :earth_africa:",
+                'guitar':'<:petrucci_scare:293783989288828928> :guitar:',
+                'bass':'<:myung_uwotm8:293783987812565003> :guitar:',
+                'drums':'<:portnoy_stroke:293786431934038017> :drum:',
+                'keyboard':'<:rudess_yeo:293783985689985024> :musical_keyboard:',
+                'piano':'<:rudess_yeo:293783985689985024> :musical_keyboard:',
+                'vocals':'<:labrie_nightmare:293790537880961024> :microphone:'
+            };
+
+            if(!validRoles.includes(args[1].toLowerCase())){
+                message.reply("This role is not self applicable.")
+            }
+            else{
+                let r_mes = eval(`roles.${args[1].toLowerCase()}`);
+                message.member.addRole(message.guild.roles.find('name', world)).then(m => message.reply(r_mes)).catch(console.error);
+            }
+        }
+
+        else{
+            message.reply("Role help message.")
+        }
+    }
+
+    //lyrics
+    if(args[0]=='lyrics'){
+            if(args[1] === undefined){return;}
+            var song_input = args[1].toLowerCase();
+            for(i=2;i<args.length;i++){
+                song_input += ` ${args[i]}`.toLowerCase();
+            }
+            let bad_songs = ['regression', 'overture 1928', 'strange deja vu', 'through my words', 'fatal tragedy', 'beyond this life', 'through her eyes', 'home', 'the dance of eternity', 'one last time', 'the spirit carries on', 'finally free'];
+            let instrumentals = ['eve', 'the ytse jam', 'ytse jam', 'erotomania', "hell's kitchen", 'bombay vindaloo', 'stream of consciousness', 'enigma machine', 'raw dog', 'false awakening suite'];
+            let bad_eq = [
+                ['sceneoneregression', 'Act I: Scene One: Regression'],
+                [false, 'Act I: Scene Two: I. Overture 1928'],
+                ['iistrangedejavu', 'Act I: Scene Two: II. Strange Déjà Vu'],
+                ['scenethreeithroughmywords', 'Act I: Scene Three: I. Through My Words'],
+                ['iifataltragedy', 'Act I: Scene Three: II. Fatal Tragedy'],
+                ['scenefourbeyondthislife', 'Act I: Scene Four: Beyond This Life'],
+                ['through her eyes', 'Act I: Scene Five: Through Her Eyes '],
+                ['scenesixhome', 'Act II: Scene Six: Home'],
+                [false, 'Act II: Scene Seven: I. The Dance of Eternity'],
+                ['iionelasttime', 'Act II: Scene Seven: II. One Last Time'],
+                ['sceneeightthespiritcarrieson', 'Act II: Scene Eight: The Spirit Carries On'],
+                ['sceneninefinallyfree', 'Act II: Scene Nine: Finally Free'],
+            ];
+
+            var musix_song = song_input;
+            var az_song = song_input.replace(/ /g,'');
+
+            for(i=0;i<bad_songs.length;i++){
+                if(song_input == bad_songs[i]){
+                    var musix_song = bad_eq[i][1];
+                    var az_song = bad_eq[i][0];
+                }
+            }
+
+            for(i=0;i<instrumentals.length;i++){
+                if(song_input == instrumentals[i]){
+                    var az_song = false;
+                }
+            }
+
+            async.waterfall([
+                function(callback) {
+                    var m_url = `http://api.musixmatch.com/ws/1.1/track.search?apikey=${key}&q_artist=dream%20theater&q_track=${musix_song}`;
+                    request(m_url, function(error, response, res) {
+                        let result = JSON.parse(res);
+                        if(result.message.header.available==0){
+                            return;
+                        }else{
+                        var minfo = {
+                            name:result.message.body.track_list[0].track.track_name,
+                            album_name:result.message.body.track_list[0].track.album_name,
+                            date:result.message.body.track_list[0].track.first_release_date
+                        }
+                        callback(null, minfo)
+                        }
+                    });
+                }
+            ], function (err, result) {
+                let date = new Date(result.date).getFullYear() + 1;
+
+                var covers = [
+                    ['When Dream and Day Unite','https://i.imgur.com/5RHSiJH.jpg'],
+                    ['Images And Words','https://imgur.com/o9szaWE.jpg'],
+                    ['Images and Words','https://imgur.com/o9szaWE.jpg'],
+                    ['Awake','https://i.imgur.com/7swxyDp.jpg'],
+                    ['A Change of Seasons','https://upload.wikimedia.org/wikipedia/pt/7/7c/220px-Dtheater-change-seasons.jpg'],
+                    ['Falling Into Infinity','https://i.imgur.com/0ecx5Q0.png'],
+                    ['Cleaning Out the Closet','https://i.imgur.com/UnizVB6.png'],
+                    ['Score: 20th Anniversary World Tour - Live With the Octavarium Orchestra','https://imgur.com/AxxMPqM.jpg'],
+                    ['Metropolis, Part 2: Scenes From a Memory','https://imgur.com/lSY0v4R.png'],
+                    ['Six Degrees of Inner Turbulence','https://upload.wikimedia.org/wikipedia/pt/1/15/220px-Dream_Theater_-_Six_Degrees_of_Inner_Turbulence.jpg'],
+                    ['Train of Thought','https://i.imgur.com/FE0thyp.png'],
+                    ['Octavarium','https://upload.wikimedia.org/wikipedia/en/9/96/Dream_Theater_-_Octavarium.jpg'],
+                    ['Systematic Chaos','https://upload.wikimedia.org/wikipedia/en/e/e3/Dream_Theater_-_Systematic_Chaos.jpg'],
+                    ['Black Clouds & Silver Linings','https://upload.wikimedia.org/wikipedia/en/7/7d/Dream_Theater_-_Black_Clouds_%26_Silver_Linings.jpg'],
+                    ['A Dramatic Turn of Events','https://upload.wikimedia.org/wikipedia/en/7/7d/Dream_Theater_-_Black_Clouds_%26_Silver_Linings.jpg'],
+                    ['Dream Theater','https://upload.wikimedia.org/wikipedia/pt/b/be/Dreamtheater2013.jpg'],
+                    ['The Astonishing','https://upload.wikimedia.org/wikipedia/pt/8/87/Dream-Theater-The-Astonishing.jpg']
+                ];
+
+                var cover = '';
+                for(i=0;i<covers.length;i++){
+                    if(result.album_name == covers[i][0]){
+                        console.log("foi")
+                        cover = covers[i][1]
+                    }
+                }
+
+                function print_lyrics(music){
+                    var lyricEmbed = module.exports.lyricEmbed = new Discord.RichEmbed()
+                    .setColor(0x85171d)
+                    .setAuthor(`NOMAC // ${result.name}`, 'https://a.thumbs.redditmedia.com/CK3mlJPLodayl_2bTbFkxC8FBuyevfeCTu0b6gK-_x8.png')
+                    .setThumbnail(cover)
+                    .setDescription(`\n${music}`)
+                    .setFooter(`${result.album_name} | ${date}`);
+
+                    message.channel.send(lyricEmbed);
+                }
+
+                if(az_song === false){
+                    print_lyrics('(Instrumental)');
+                    return;
+                }
+                else{
+                    let lyric_url = `https://www.azlyrics.com/lyrics/dreamtheater/${az_song}.html`;
+                    request(lyric_url, function(error, response, res) {
+                        if(error!==null){return;}
+                        if(res.includes('Welcome to AZLyrics!')===true){
+                            return;
+                        }
+                        var l = (((((((res.split('<!-- Usage of azlyrics.com content by any third-party lyrics provider is prohibited by our licensing agreement. Sorry about that. -->').pop()).split("<!-- MxM banner -->")[0])).replace(/<br>/g,'')).replace('</div>', '')).replace(/&quot;/g, '"')).replace(/^\s+|\s+$/g, '').replace(/<(\/)?i([^>]*)>/g, ''));
+
+                        if(l.length > 2048){
+                            let l_red = l.substring(0,1900) + '...\n\n**Full lyrics:** ' + lyric_url;
+                            print_lyrics(l_red);
+                        }
+                        else{
+                            print_lyrics(l);
+                        }
+                    });
+                }
+
+            });        
+    }
+});
